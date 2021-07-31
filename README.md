@@ -1,77 +1,176 @@
-Symfony Standard Edition
-========================
+# Symfony 3.4
 
-**WARNING**: This distribution does not support Symfony 4. See the
-[Installing & Setting up the Symfony Framework][15] page to find a replacement
-that fits you best.
+since we are working with Bundles i chose to work with `Symfony 3.4` because its architecture is based on Bundles unlike newer versions.
 
-Welcome to the Symfony Standard Edition - a fully-functional Symfony
-application that you can use as the skeleton for your new applications.
+# php-jira-rest-client
 
-For details on how to download and get started with Symfony, see the
-[Installation][1] chapter of the Symfony Documentation.
+[php-jira-rest-client](https://github.com/lesstif/php-jira-rest-client) needs a `.env` file that contains all the needed configurations.
 
-What's inside?
---------------
 
-The Symfony Standard Edition is configured with the following defaults:
+Use the package manager [pip](https://pip.pypa.io/en/stable/) to install foobar.
 
-  * An AppBundle you can use to start coding;
+```bash
+JIRA_HOST="https://testinghost.atlassian.net"
+JIRA_USER="cheblijassem@gmail.com"
+JIRA_PASS="VuCjdmHiHUqdM6V73cRsA548"
+JIRA_LOG_ENABLED=true
+JIRA_LOG_FILE="jira-rest-client.log"
+JIRA_LOG_LEVEL="WARNING"
 
-  * Twig as the only configured template engine;
+JIRA_REST_API_V3=false
+```
 
-  * Doctrine ORM/DBAL;
+these configurations can be overridden by creating a Service class with an `ArrayConfiguration` parameter.
 
-  * Swiftmailer;
+```php
+public function getConfiguration()
+    {
+        try {
+            $iss = new IssueService(new ArrayConfiguration(
+                array(
+                    'jiraHost' => 'https://your-jira.host.com',
+                    // for basic authorization:
+                    'jiraUser' => 'cheblijassem@gmail.com',
+                    'jiraPassword' => 'VuCjdmHiHUqdM6V73cRsA548',
+                    // to enable session cookie authorization (with basic authorization only)
+                    'cookieAuthEnabled' => true,
+                    'cookieFile' => realpath(__DIR__ . '/../../../../web/upload/jira-cookie.txt'),
+                    // if you are behind a proxy, add proxy settings
+                    "proxyServer" => 'your-proxy-server',
+                    "proxyPort" => 'proxy-port',
+                    "proxyUser" => 'proxy-username',
+                    "proxyPassword" => 'proxy-password',
+                )
+            ));
+        } catch (JiraException $e) {
+            return $e;
+        } catch (\Exception $e) {
+            return $e;
+        }
+    }
+```
 
-  * Annotations enabled for everything.
+calling `/test` defined in `routing.yaml` invokes the `DefaultController.php`
+```yaml
+jassem_chebli_test_jira:
+    resource: "@JassemChebliTestJiraBundle/Resources/config/routing.yml"
+    prefix:   test/
+```
+### DefaultController.php
 
-It comes pre-configured with the following bundles:
+```php
+<?php
+namespace JassemChebli\TestJiraBundle\Controller;
+use JassemChebli\TestJiraBundle\Service\ConfigurationService;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Response;
+class DefaultController extends Controller
+{
+    public function indexAction()
+    {
+        $config = new ConfigurationService();
+        $message = $config->getConfiguration();
+        return new Response(
+            '<html lang="en"><body>' . json_encode($message) . '</body></html>'
+        );
+    }
+}
+```
 
-  * **FrameworkBundle** - The core Symfony framework bundle
 
-  * [**SensioFrameworkExtraBundle**][6] - Adds several enhancements, including
-    template and routing annotation capability
 
-  * [**DoctrineBundle**][7] - Adds support for the Doctrine ORM
+# cybermonde/odtphp
 
-  * [**TwigBundle**][8] - Adds support for the Twig templating engine
+[cybermonde/odtphp](https://github.com/cybermonde/odtphp) is a library to quickly generate Open Document Text-files that can be read by a gigantic set of Office Suites, including LibreOffice, OpenOffice and even Microsoft Office from PHP code. It uses a simple templating mechanism. See the tests/ folder for a set of examples.
 
-  * [**SecurityBundle**][9] - Adds security by integrating Symfony's security
-    component
+## createOdtInstance.php
 
-  * [**SwiftmailerBundle**][10] - Adds support for Swiftmailer, a library for
-    sending emails
+Creating a service that requires the  [Odf.php](https://github.com/cybermonde/odtphp/blob/master/src/Odf.php) class inside the [cybermonde/odtphp](https://github.com/cybermonde/odtphp) library.
+among the parameters the most important is the filename specified in the `Odf()` instance creation 
 
-  * [**MonologBundle**][11] - Adds support for Monolog, a logging library
+```php
+$odt = new odf('tutoriel1.odt');
+```
 
-  * **WebProfilerBundle** (in dev/test env) - Adds profiling functionality and
-    the web debug toolbar
+the library offers a lot of models detailed here [Documentation.pdf](https://github.com/cybermonde/odtphp/blob/master/documentation/odtphp_documentation.pdf) according to your needs.
 
-  * **SensioDistributionBundle** (in dev/test env) - Adds functionality for
-    configuring and working with Symfony distributions
 
-  * [**SensioGeneratorBundle**][13] (in dev env) - Adds code generation
-    capabilities
+```php
+<?php
 
-  * [**WebServerBundle**][14] (in dev env) - Adds commands for running applications
-    using the PHP built-in web server
+namespace JassemChebli\OdtBundle\Service;
 
-  * **DebugBundle** (in dev/test env) - Adds Debug and VarDumper component
-    integration
+use Odf;
 
-All libraries and bundles included in the Symfony Standard Edition are
-released under the MIT or BSD license.
+class OdtService
+{
+    public function createOdtInstance()
+    {
+        try {
+            $odt = new odf('tutoriel1.odt');
+            $odt->setVars('titre', 'PHP');
+            $message = "PHP est un lde s l ...";
+            $odt->setVars('message', $message);
+            $odt->exportAsAttachedFile();
+            $messages = 'created successfully';
+        } catch (\OdfException $e) {
+            $messages = $e;
+        }
 
-Enjoy!
+        return $messages;
 
-[1]:  https://symfony.com/doc/3.4/setup.html
-[6]:  https://symfony.com/doc/current/bundles/SensioFrameworkExtraBundle/index.html
-[7]:  https://symfony.com/doc/3.4/doctrine.html
-[8]:  https://symfony.com/doc/3.4/templating.html
-[9]:  https://symfony.com/doc/3.4/security.html
-[10]: https://symfony.com/doc/3.4/email.html
-[11]: https://symfony.com/doc/3.4/logging.html
-[13]: https://symfony.com/doc/current/bundles/SensioGeneratorBundle/index.html
-[14]: https://symfony.com/doc/current/setup/built_in_web_server.html
-[15]: https://symfony.com/doc/current/setup.html
+
+    }
+}
+```
+
+calling `/odt` defined in `routing.yaml` invokes the `DefaultController.php`
+```yaml
+jassem_chebli_odt:
+    resource: "@JassemChebliOdtBundle/Resources/config/routing.yml"
+    prefix:   odt/
+```
+### DefaultController.php
+
+```php
+  
+<?php
+
+namespace JassemChebli\OdtBundle\Controller;
+
+use JassemChebli\OdtBundle\Service\OdtService;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Response;
+
+class DefaultController extends Controller
+{
+    public function indexAction()
+    {
+        $odtServiceFactory = new OdtService();
+        $message = $odtServiceFactory->createOdtInstance();
+        return new Response(
+            '<html lang="en"><body>' . $message . '</body></html>'
+        );
+    }
+}
+```
+
+### Troubleshooting
+
+you may encounter this error `nothing to parse - check that the content.xml file is correctly formed`
+which is basically telling you that locating a chosen `filename` model has failed.
+
+the solution is to add this code inside the `Odf.php` class in the library
+```php
+$this->file = new $zipHandler();
+        $newFile = str_replace(".odt", ".zip", '../tests/'.$filename);
+        copy(realpath(__DIR__ . '/../tests').'/'.$filename, $newFile);
+        $filename = $newFile;
+```
+
+under the creation of the zipHandler instance
+```php
+$this->file = new $zipHandler();
+```
+
+just calling the service once fix the error then you can remove any changes made in the `Odf.php` class.
