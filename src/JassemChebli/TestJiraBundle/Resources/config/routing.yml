@@ -1,0 +1,3 @@
+jassem_chebli_test_jira_homepage:
+    path:     /
+    defaults: { _controller: JassemChebliTestJiraBundle:Default:index }

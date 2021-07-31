@@ -1,0 +1,3 @@
+jassem_chebli_odt_homepage:
+    path:     /
+    defaults: { _controller: JassemChebliOdtBundle:Default:index }

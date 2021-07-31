@@ -1,0 +1,11 @@
+jassem_chebli_odt:
+    resource: "@JassemChebliOdtBundle/Resources/config/routing.yml"
+    prefix:   odt/
+
+jassem_chebli_test_jira:
+    resource: "@JassemChebliTestJiraBundle/Resources/config/routing.yml"
+    prefix:   test/
+
+app:
+    resource: '@AppBundle/Controller/'
+    type: annotation
